@@ -1,0 +1,3 @@
+[submodule "grlib"]
+	path = grlib
+	url = git@github.com:ffffffcat/grlib.git
