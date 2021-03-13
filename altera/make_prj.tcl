@@ -30,14 +30,19 @@ set GAISLER_SET {
     ../../grlib/lib/gaisler/uart/ahbuart.vhd
     ../../grlib/lib/gaisler/uart/apbuart.vhd
     ../../grlib/lib/gaisler/spi/spi.vhd
-    ../../grlib/lib/gaisler/spi/spi2ahb.vhd
-    ../../grlib/lib/gaisler/spi/spi2ahbx.vhd
+    ../../grlib/lib/gaisler/spi/spictrlx.vhd
+    ../../grlib/lib/gaisler/spi/spictrl.vhd
     ../../grlib/lib/gaisler/leon3/leon3.vhd
     ../../grlib/lib/gaisler/irqmp/irqmp.vhd
 }
 
 set TECHMAP_SET {
+    ../../grlib/lib/techmap/gencomp/netcomp.vhd
     ../../grlib/lib/techmap/gencomp/gencomp.vhd
+    ../../grlib/lib/techmap/inferred/memory_inferred.vhd
+    ../../grlib/lib/techmap/alltech/allmem.vhd
+    ../../grlib/lib/techmap/maps/memrwcol.vhd
+    ../../grlib/lib/techmap/maps/syncram_2p.vhd
 }
 
 foreach vhdl_file $GRLIB_SET {

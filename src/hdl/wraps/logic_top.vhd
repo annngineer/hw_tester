@@ -48,19 +48,14 @@ architecture logic_top_arc of logic_top is
 
     ---------------- AMBA AHB Slaves Indeces
     constant cINDEX_AHBS_APBCTRL: integer := 0;
-    constant cINDEX_AHBS_SPI: integer := 1;
-    constant cAHB_slv_num: integer := 2;
+    constant cAHB_slv_num: integer := 1;
 
     ------------------ AMBA APB Indeces
     constant cINDEX_APB_GPIO: integer := 0;
     constant cINDEX_APB_APBUART: integer := 1;
-    constant cINDEX_APB_IRQMP: integer := 2;
+    constant cINDEX_APB_SPI: integer := 2;
     constant cINDEX_APB_UART_DBG: integer := 3;
     constant cAPB_slv_num: integer := 4;
-
-    ------------------ IRQ table
-    constant cINDEX_IRQ_GPIO: integer := 0;
-    constant cINDEX_IRQ_APBUART: integer := 1;
 
     constant cGPIO_width: integer := 10;
 
@@ -83,9 +78,6 @@ architecture logic_top_arc of logic_top is
 
     signal sUART_dbg_i: uart_in_type;
     signal sUART_dbg_o: uart_out_type;
-
-    signal sIRQi: irq_in_vector(0 downto 0);
-    signal sIRQo: irq_out_vector(0 downto 0);
 
     signal sGPIOi: gpio_in_type;
     signal sGPIOo: gpio_out_type;
@@ -157,23 +149,6 @@ begin
             ahbo => sAHBmo(cINDEX_AHBM_UART_DBG)
         );
 
-    -- SPI
-    spi_gate: spi2ahb
-        generic map (
-           hindex => cINDEX_AHBS_SPI,
-           oepol => 1,
-           cpol => 0,
-           cpha => 1
-        )
-        port map (
-           rstn => sReset_synch,
-           clk => iClk,
-           ahbi => sAHBmi,
-           ahbo => sAHBmo(cINDEX_AHBS_SPI),
-           spii => sSPIi,
-           spio => sSPIo
-        );
-
 ----------------- AMBA APB components
     -- APB ctrl
     apb_ctrl: apbctrl
@@ -191,12 +166,11 @@ begin
             apbo => sAPBo
         );
 
-
+    -- GPIO
     gpio: grgpio
         generic map (
             pindex => cINDEX_APB_GPIO,
             paddr => cINDEX_APB_GPIO,
-            pirq => cINDEX_IRQ_GPIO,
             nbits => cGPIO_width
         )
         port map (
@@ -208,12 +182,26 @@ begin
             gpioo => sGPIOo
         );
 
+    -- SPI
+    spi: spictrl
+        generic map (
+            pindex => cINDEX_APB_SPI,
+            paddr => cINDEX_APB_SPI
+        )
+        port map (
+            rstn => sReset_synch,
+            clk => iClk,
+            apbi => sAPBi,
+            apbo => sAPBo(cINDEX_APB_SPI),
+            spii => sSPIi,
+            spio => sSPIo
+        );
+
     -- UART
     uart: apbuart
         generic map (
             pindex => cINDEX_APB_APBUART,
-            paddr => cINDEX_APB_APBUART,
-            pirq => cINDEX_IRQ_APBUART
+            paddr => cINDEX_APB_APBUART
         )
         port map(
             rst => sReset_synch,
@@ -222,21 +210,6 @@ begin
             apbo => sAPBo(cINDEX_APB_APBUART),
             uarti => sUARTi,
             uarto => sUARTo
-        );
-
-    -- IRQ ctrl
-    irq_ctrl: irqmp
-        generic map (
-            pindex => cINDEX_APB_IRQMP,
-            paddr => cINDEX_APB_IRQMP
-        )
-        port map (
-            rst => sReset_synch,
-            clk => iClk,
-            apbi => sAPBi,
-            apbo => sAPBo(cINDEX_APB_IRQMP),
-            irqi => sIRQo,
-            irqo => sIRQi
         );
 
 end logic_top_arc;
