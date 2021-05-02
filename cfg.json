@@ -1,0 +1,7 @@
+[
+    {"name": "ahbuart", "cfg": {
+    }},
+    {"name": "grgpio", "cfg": {
+        "nbits": 1
+    }}
+]
